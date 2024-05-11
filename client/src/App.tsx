@@ -1,19 +1,19 @@
-import { Button } from "@/components/ui/button";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
+import { Route, Routes } from "react-router-dom";
+
+import Header from "@/components/Header";
+import Home from "@/pages/Home";
+import Compiler from "@/pages/Compiler";
+import NotFound from "@/pages/NotFound";
 
 function App() {
   return (
     <>
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel>One</ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel>Two</ResizablePanel>
-      </ResizablePanelGroup>
-      <Button variant="outline">hiii</Button>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/compiler" element={<Compiler />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </>
   );
 }
