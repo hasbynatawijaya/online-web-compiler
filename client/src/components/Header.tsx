@@ -13,6 +13,16 @@ const Header = () => {
             <Button variant="outline">Compiler</Button>
           </Link>
         </li>
+        <li>
+          <Link to="/login">
+            <Button variant="success">Login</Button>
+          </Link>
+        </li>
+        <li>
+          <Link to="/signup">
+            <Button variant="blue">Sign Up</Button>
+          </Link>
+        </li>
       </ul>
     </nav>
   );
