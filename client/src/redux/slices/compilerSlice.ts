@@ -110,11 +110,19 @@ const compilerSlice = createSlice({
     ) => {
       state.currentLanguage = action.payload;
     },
-    setFullCode: (state, action: PayloadAction<string>) => {
+    setFullCodeByLanguage: (state, action: PayloadAction<string>) => {
       state.fullCode[state.currentLanguage] = action.payload;
+    },
+    setFullCode: (
+      state,
+      action: PayloadAction<CompilerInitialState["fullCode"]>
+    ) => {
+      console.log(action.payload)
+      state.fullCode = action.payload;
     },
   },
 });
 
-export const { setCurrentLanguage, setFullCode } = compilerSlice.actions;
+export const { setCurrentLanguage, setFullCode, setFullCodeByLanguage } =
+  compilerSlice.actions;
 export default compilerSlice.reducer;

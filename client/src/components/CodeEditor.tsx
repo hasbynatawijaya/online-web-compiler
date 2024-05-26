@@ -6,7 +6,7 @@ import { draculaInit } from "@uiw/codemirror-theme-dracula";
 import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 
 import { RootState } from "@/redux/slices/store";
-import { setFullCode } from "@/redux/slices/compilerSlice";
+import { setFullCodeByLanguage } from "@/redux/slices/compilerSlice";
 
 const CodeEditor = () => {
   const dispatch = useDispatch();
@@ -18,7 +18,7 @@ const CodeEditor = () => {
   );
 
   const onChange = useCallback((value: string) => {
-    dispatch(setFullCode(value));
+    dispatch(setFullCodeByLanguage(value));
   }, []);
 
   return (

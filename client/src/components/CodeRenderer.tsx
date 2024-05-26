@@ -6,7 +6,7 @@ const CodeRenderer = () => {
   const fullCode = useSelector(
     (state: RootState) => state.compilerSlice.fullCode
   );
-  console.log(fullCode);
+
   const combinedCode = `
   <html>
     <style>

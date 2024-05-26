@@ -9,8 +9,25 @@ export const saveCode = async (req: Request, res: Response) => {
     const newCode = await Code.create({
       fullCode: fullCode,
     });
-    return res.status(201).send(newCode);
+    return res.status(201).send({
+      id: newCode._id,
+      status: "success",
+    });
   } catch (error) {
     return res.status(500).send({ message: "Error saving code", error });
+  }
+};
+
+export const loadCode = async (req: Request, res: Response) => {
+  const { id } = req.query;
+
+  try {
+    const existingCode = await Code.findById(id);
+
+    if (!existingCode)
+      return res.status(404).send({ message: "Code not found" });
+    return res.status(200).send({ fullCode: existingCode.fullCode });
+  } catch (error) {
+    return res.status(500).send({ message: "Error loading code", error });
   }
 };

@@ -12,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/compiler" element={<Compiler />} />
+        <Route path="/compiler/:id" element={<Compiler />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
