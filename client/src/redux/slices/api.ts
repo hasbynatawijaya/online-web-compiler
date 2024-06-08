@@ -1,7 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { ICompilerInitialState } from "./compilerSlice";
-import { ILoginCredentials, IUser } from "@/types/userTypes";
+import {
+  ILoginCredentials,
+  ISignupCredentials,
+  IUser,
+} from "@/types/userTypes";
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -47,6 +51,14 @@ export const api = createApi({
         method: "POST",
       }),
     }),
+    signup: builder.mutation<IUser, ISignupCredentials>({
+      query: (body) => ({
+        url: "/user/signup",
+        method: "POST",
+        body: body,
+        credentials: "include",
+      }),
+    }),
     getUserDetails: builder.query<IUser, void>({
       query: () => ({
         url: "/user/user-details",
@@ -63,4 +75,5 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useGetUserDetailsQuery,
+  useSignupMutation,
 } = api;

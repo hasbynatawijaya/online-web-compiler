@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useSignupMutation } from "@//redux/slices/api";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { handleError } from "@//utils/handleError";
+import { setCurrentUser, setIsLoggedIn } from "@/redux/slices/appSlice";
 
 const formSchema = z
   .object({
@@ -24,7 +28,12 @@ const formSchema = z
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
+
 const Signup = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [signup, { isLoading }] = useSignupMutation();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,8 +44,15 @@ const Signup = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const response = await signup(values).unwrap();
+      dispatch(setCurrentUser(response));
+      dispatch(setIsLoggedIn(true));
+      navigate("/");
+    } catch (error) {
+      handleError(error);
+    }
   };
 
   return (
@@ -104,7 +120,12 @@ const Signup = () => {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">
+            <Button
+              className="w-full"
+              type="submit"
+              isLoading={isLoading}
+              disabled={isLoading}
+            >
               Sign Up
             </Button>
           </form>
