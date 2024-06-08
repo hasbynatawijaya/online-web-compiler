@@ -1,19 +1,15 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Route, Routes } from "react-router-dom";
 
 import Header from "@/components/Header";
-import Home from "@/pages/Home";
-import Compiler from "@/pages/Compiler";
-import NotFound from "@/pages/NotFound";
-import Login from "@/pages/Login";
-import Signup from "@/pages/Signup";
+import Routes from "@/routes";
+
 import { useGetUserDetailsQuery, useLogoutMutation } from "@/redux/slices/api";
-import { setCurrentUser, setIsLoggedIn } from "./redux/slices/appSlice";
+import { setCurrentUser, setIsLoggedIn } from "@/redux/slices/appSlice";
 
 function App() {
   const dispatch = useDispatch();
-  const { data, isError, isSuccess } = useGetUserDetailsQuery();
+  const { data, isError } = useGetUserDetailsQuery();
   const [logout] = useLogoutMutation();
 
   useEffect(() => {
@@ -30,14 +26,7 @@ function App() {
   return (
     <>
       <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/compiler" element={<Compiler />} />
-        <Route path="/compiler/:id" element={<Compiler />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Routes />
     </>
   );
 }
