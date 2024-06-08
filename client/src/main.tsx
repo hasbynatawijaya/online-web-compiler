@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 
 import App from "@/App";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 
 import { store } from "@/redux/slices/store";
 
@@ -17,7 +17,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <Provider store={store}>
         <ThemeProvider defaultTheme="dark" storageKey="compiler-ui-theme">
           <App />
-          <Toaster />
+          <Toaster closeButton richColors />
         </ThemeProvider>
       </Provider>
     </BrowserRouter>

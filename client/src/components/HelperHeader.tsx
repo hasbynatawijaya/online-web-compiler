@@ -1,8 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Save, Share2, Loader2, Code, Copy } from "lucide-react";
+import { Save, Share2, Code, Copy } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components//ui/button";
 import {
@@ -21,19 +20,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/use-toast";
 
 import {
-  CompilerInitialState,
+  ICompilerInitialState,
   setCurrentLanguage,
 } from "@/redux/slices/compilerSlice";
 import { RootState } from "@/redux/slices/store";
+import { useSaveCodeMutation } from "@/redux/slices/api";
 import { handleError } from "@/utils/handleError";
 
 const HelperHeader = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { toast } = useToast();
   const { id } = useParams();
   const currentLanguage = useSelector(
     (state: RootState) => state.compilerSlice.currentLanguage
@@ -41,45 +39,34 @@ const HelperHeader = () => {
   const fullCode = useSelector(
     (state: RootState) => state.compilerSlice.fullCode
   );
-
-  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveCode, { isLoading }] = useSaveCodeMutation();
 
   const handleSaveCode = async () => {
     try {
-      setSaveLoading(true);
-      const response = await axios.post("http://localhost:4000/compiler/save", {
-        fullCode,
-      });
-      navigate(`/compiler/${response.data.id}`, { replace: true });
+      const response = await saveCode(fullCode).unwrap();
+      navigate(`/compiler/${response.url}`, { replace: true });
     } catch (error) {
       handleError(error);
     } finally {
-      setSaveLoading(false);
     }
   };
 
   const handleCopyURL = () => {
     window.navigator.clipboard.writeText(window.location.href);
-    toast({
-      title: "Link copied",
-      variant: "default",
-    });
+    toast.success("Link copied");
   };
 
   return (
     <div className="__helper-header h-[50px] bg-black text-white p-2 flex justify-between items-center gap-1">
       <div className="__btn_container flex gap-1">
         <Button
-          disabled={saveLoading}
+          disabled={isLoading}
+          isLoading={isLoading}
           onClick={handleSaveCode}
           variant="success"
           container="withIcon"
         >
-          {saveLoading ? (
-            <Loader2 size={16} className="animate-spin" />
-          ) : (
-            <Save size={16} />
-          )}
+          <Save size={16} />
           Save
         </Button>
         {id ? (
@@ -124,7 +111,7 @@ const HelperHeader = () => {
           onValueChange={(value) =>
             dispatch(
               setCurrentLanguage(
-                value as CompilerInitialState["currentLanguage"]
+                value as ICompilerInitialState["currentLanguage"]
               )
             )
           }
