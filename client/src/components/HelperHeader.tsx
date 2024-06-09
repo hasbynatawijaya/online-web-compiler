@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Save, Share2, Code, Copy } from "lucide-react";
+import { Save, Share2, Code, Copy, Download } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -51,6 +51,40 @@ const HelperHeader = () => {
     }
   };
 
+  const handleDownloadCode = () => {
+    const htmlCode = new Blob([fullCode.html], { type: "text/html" });
+    const cssCode = new Blob([fullCode.css], { type: "text/css" });
+    const javascriptCode = new Blob([fullCode.javascript], {
+      type: "text/javascript",
+    });
+
+    const htmlLink = document.createElement("a");
+    const cssLink = document.createElement("a");
+    const javascriptLink = document.createElement("a");
+
+    htmlLink.href = URL.createObjectURL(htmlCode);
+    htmlLink.download = "index.html";
+    document.body.appendChild(htmlLink);
+
+    cssLink.href = URL.createObjectURL(cssCode);
+    cssLink.download = "style.css";
+    document.body.appendChild(cssLink);
+
+    javascriptLink.href = URL.createObjectURL(javascriptCode);
+    javascriptLink.download = "index.js";
+    document.body.appendChild(javascriptLink);
+
+    if (fullCode.html) htmlLink.click();
+    if (fullCode.css) cssLink.click();
+    if (fullCode.javascript) javascriptLink.click();
+
+    document.body.removeChild(htmlLink);
+    document.body.removeChild(cssLink);
+    document.body.removeChild(javascriptLink);
+
+    toast.success("Code downloaded successfully");
+  };
+
   const handleCopyURL = () => {
     window.navigator.clipboard.writeText(window.location.href);
     toast.success("Link copied");
@@ -68,6 +102,9 @@ const HelperHeader = () => {
         >
           <Save size={16} />
           Save
+        </Button>
+        <Button onClick={handleDownloadCode} size="icon" variant="blue">
+          <Download size={16} />
         </Button>
         {id ? (
           <Dialog>
