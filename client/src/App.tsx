@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import Header from "@/components/Header";
-import Routes from "@/routes";
+import Routes from "@/Routes";
 
 import { useGetUserDetailsQuery, useLogoutMutation } from "@/redux/slices/api";
 import { setCurrentUser, setIsLoggedIn } from "@/redux/slices/appSlice";

@@ -1,6 +1,7 @@
 import { toast } from "sonner";
 
 export const handleError = (error: any) => {
-  console.log(error.data.message);
-  toast.error("Error: " + error.data.message, {});
+  if (error?.data?.message) {
+    toast.error("Error: " + error?.data?.message, {});
+  } else toast.error("Something went wrong please try again later");
 };

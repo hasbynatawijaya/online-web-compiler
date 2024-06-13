@@ -8,6 +8,8 @@ const Compiler = lazy(() => import("@/pages/Compiler"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Login = lazy(() => import("@/pages/Login"));
 const Signup = lazy(() => import("@/pages/Signup"));
+const AllCodes = lazy(() => import("@/pages/AllCodes"));
+const MyCodes = lazy(() => import("@/pages/MyCodes"));
 
 const Routes = () => {
   return (
@@ -23,6 +25,8 @@ const Routes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/compiler" element={<Compiler />} />
+        <Route path="/all-codes" element={<AllCodes />} />
+        <Route path="/my-codes" element={<MyCodes />} />
         <Route path="/compiler/:id" element={<Compiler />} />
         <Route path="*" element={<NotFound />} />
       </RouterRoutes>

@@ -50,6 +50,7 @@ export const loadCode = async (req: IAuthRequest, res: Response) => {
     if (!existingCode) {
       return res.status(404).send({ message: "Code not found" });
     }
+
     const user = await User.findById(userId);
     if (user?.username === existingCode.ownerName) {
       isOwner = true;
@@ -139,6 +140,6 @@ export const getAllCodes = async (req: Request, res: Response) => {
     const allCodes = await Code.find().sort({ createdAt: -1 });
     return res.status(200).send(allCodes);
   } catch (error) {
-    return res.status(500).send({ message: "Error editing code!", error });
+    return res.status(500).send({ message: "Error loading code!", error });
   }
 };

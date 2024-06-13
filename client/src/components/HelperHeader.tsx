@@ -1,7 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Save, Share2, Code, Copy, Download } from "lucide-react";
+import { Save, Share2, Code, Copy, Download, PencilLine } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { useState } from "react";
 
 import { Button } from "@/components//ui/button";
 import {
@@ -20,34 +21,57 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
+import { Input } from "@/components/ui/input";
 import {
   ICompilerInitialState,
   setCurrentLanguage,
 } from "@/redux/slices/compilerSlice";
 import { RootState } from "@/redux/slices/store";
-import { useSaveCodeMutation } from "@/redux/slices/api";
+import { useEditCodeMutation, useSaveCodeMutation } from "@/redux/slices/api";
 import { handleError } from "@/utils/handleError";
 
 const HelperHeader = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
+
   const currentLanguage = useSelector(
     (state: RootState) => state.compilerSlice.currentLanguage
   );
   const fullCode = useSelector(
     (state: RootState) => state.compilerSlice.fullCode
   );
-  const [saveCode, { isLoading }] = useSaveCodeMutation();
+  const isOwner = useSelector(
+    (state: RootState) => state.compilerSlice.isOwner
+  );
+
+  const [saveCode, { isLoading: saveCodeLoading }] = useSaveCodeMutation();
+  const [editCode, { isLoading: editCodeLoading }] = useEditCodeMutation();
+
+  const [title, setTitle] = useState("");
 
   const handleSaveCode = async () => {
     try {
-      const response = await saveCode(fullCode).unwrap();
+      const response = await saveCode({
+        fullCode,
+        title,
+      }).unwrap();
+      toast.success("Code saved successfully");
       navigate(`/compiler/${response.url}`, { replace: true });
     } catch (error) {
       handleError(error);
-    } finally {
+    }
+  };
+
+  const handleEditCode = async () => {
+    try {
+      await editCode({
+        fullCode,
+        _id: id as string,
+      }).unwrap();
+      toast.success("Code edited successfully");
+    } catch (error) {
+      handleError(error);
     }
   };
 
@@ -93,52 +117,89 @@ const HelperHeader = () => {
   return (
     <div className="__helper-header h-[50px] bg-black text-white p-2 flex justify-between items-center gap-1">
       <div className="__btn_container flex gap-1">
-        <Button
-          disabled={isLoading}
-          isLoading={isLoading}
-          onClick={handleSaveCode}
-          variant="success"
-          container="withIcon"
-        >
-          <Save size={16} />
-          Save
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="secondary" container="withIcon">
+              <Save size={16} />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex gap-1 justify-center items-center">
+                <Code />
+                Save your code
+              </DialogTitle>
+              <DialogDescription className="flex flex-col gap-2">
+                <div className="__url flex justify-center items-center gap-1">
+                  <Input
+                    className="bg-slate-700 focus-visible:ring-0"
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                  <Button
+                    variant="success"
+                    className="h-full"
+                    onClick={handleSaveCode}
+                    isLoading={saveCodeLoading}
+                  >
+                    Save
+                  </Button>
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
         <Button onClick={handleDownloadCode} size="icon" variant="blue">
           <Download size={16} />
         </Button>
-        {id ? (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="secondary" container="withIcon">
-                <Share2 size={16} />
-                Share
+
+        {id && (
+          <>
+            {isOwner && (
+              <Button
+                isLoading={editCodeLoading}
+                onClick={handleEditCode}
+                variant="blue"
+              >
+                <PencilLine size={16} />
+                Edit
               </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle className="flex gap-1 justify-center items-center">
-                  <Code />
-                  Share your code?
-                </DialogTitle>
-                <DialogDescription className="flex flex-col gap-2">
-                  <div className="__url flex gap-1">
+            )}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size="icon" variant="secondary">
+                  <Share2 size={16} />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="flex gap-1 justify-center items-center">
+                    <Code />
+                    Share your Code!
+                  </DialogTitle>
+                  <div className="__url flex justify-center items-center gap-1">
                     <input
                       type="text"
-                      className="w-full px-2 py-2 rounded bg-slate-800 text-slate-400"
                       disabled
+                      className="w-full p-2 rounded bg-slate-800 text-slate-400 select-none"
                       value={window.location.href}
                     />
-                    <Button variant="outline" onClick={handleCopyURL}>
+                    <Button
+                      variant="outline"
+                      className="h-full"
+                      onClick={() => handleCopyURL}
+                    >
                       <Copy size={14} />
                     </Button>
                   </div>
-                  <p className="text-center">share this URL with others</p>
-                </DialogDescription>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-        ) : (
-          <></>
+                  <p className="text-center text-slate-400 text-xs">
+                    Share this URL with your friends to collaborate.
+                  </p>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          </>
         )}
       </div>
       <div className="__tab_switcher flex justify-center items-center gap-1">

@@ -2,10 +2,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/slices/store";
+import { Code2, Globe2 } from "lucide-react";
 
 import { useLogoutMutation } from "@/redux/slices/api";
+import { setCurrentUser, setIsLoggedIn } from "@/redux/slices/appSlice";
 import { handleError } from "@/utils/handleError";
-import { setCurrentUser, setIsLoggedIn } from "../redux/slices/appSlice";
+import { setIsOwner } from "../redux/slices/compilerSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -20,6 +22,7 @@ const Header = () => {
       await logout().unwrap();
       dispatch(setIsLoggedIn(false));
       dispatch(setCurrentUser(undefined));
+      dispatch(setIsOwner(false));
       navigate("/");
     } catch (error) {
       handleError(error);
@@ -34,11 +37,27 @@ const Header = () => {
       <ul className="flex gap-2">
         <li>
           <Link to="/compiler">
-            <Button variant="outline">Compiler</Button>
+            <Button variant="outline">Editor</Button>
+          </Link>
+        </li>
+        <li>
+          <Link to="/all-codes">
+            <Button container="withIcon">
+              <Globe2 size={16} />
+              All codes
+            </Button>
           </Link>
         </li>
         {isLoggedIn ? (
           <>
+            <li>
+              <Link to="/my-codes">
+                <Button container="withIcon">
+                  <Code2 size={16} />
+                  My codes
+                </Button>
+              </Link>
+            </li>
             <li>
               <Button
                 variant="destructive"

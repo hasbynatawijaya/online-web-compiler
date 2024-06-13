@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { ICompilerInitialState } from "./compilerSlice";
 import {
+  ICode,
   ILoginCredentials,
   ISignupCredentials,
   IUser,
@@ -13,22 +14,24 @@ export const api = createApi({
     baseUrl: "http://localhost:4000",
     credentials: "include",
   }),
+  tagTypes: ["myCodes", "allCodes"],
   endpoints: (builder) => ({
     saveCode: builder.mutation<
       {
         url: string;
         status: string;
       },
-      ICompilerInitialState["fullCode"]
+      ICode
     >({
-      query: (fullCode) => ({
+      query: (body) => ({
         url: "/compiler/save",
         method: "POST",
-        body: fullCode,
+        body: body,
       }),
+      invalidatesTags: ["myCodes", "allCodes"],
     }),
     loadCode: builder.query<
-      { fullCode: ICompilerInitialState["fullCode"] },
+      { fullCode: ICompilerInitialState["fullCode"]; isOwner: boolean },
       { id: string }
     >({
       query: (params) => ({
@@ -65,6 +68,35 @@ export const api = createApi({
         cache: "no-store",
       }),
     }),
+    getMyCodes: builder.query<ICode[], void>({
+      query: () => ({
+        url: "/user/my-codes",
+      }),
+      providesTags: ["myCodes"],
+    }),
+    deleteCode: builder.mutation<void, { _id: string }>({
+      query: ({ _id }) => ({
+        url: `/compiler/delete/${_id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["myCodes", "allCodes"],
+    }),
+    editCode: builder.mutation<
+      void,
+      { fullCode: ICompilerInitialState["fullCode"]; _id: string }
+    >({
+      query: ({ fullCode, _id }) => ({
+        url: `/compiler/edit/${_id}`,
+        method: "PUT",
+        body: fullCode,
+      }),
+    }),
+    getAllCodes: builder.query<ICode[], void>({
+      query: () => ({
+        url: "/compiler",
+      }),
+      providesTags: ["allCodes"],
+    }),
   }),
 });
 
@@ -76,4 +108,8 @@ export const {
   useLogoutMutation,
   useGetUserDetailsQuery,
   useSignupMutation,
+  useGetMyCodesQuery,
+  useDeleteCodeMutation,
+  useEditCodeMutation,
+  useGetAllCodesQuery,
 } = api;

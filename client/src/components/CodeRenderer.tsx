@@ -1,12 +1,12 @@
-import { useSelector } from "react-redux";
+import { FC } from "react";
 
-import { RootState } from "@/redux/slices/store";
+import { IFullCode } from "../types/compilerTypes";
 
-const CodeRenderer = () => {
-  const fullCode = useSelector(
-    (state: RootState) => state.compilerSlice.fullCode
-  );
+interface Props {
+  fullCode: IFullCode;
+}
 
+const CodeRenderer: FC<Props> = ({ fullCode }) => {
   const combinedCode = `
   <html>
     <style>

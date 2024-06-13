@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   ResizableHandle,
@@ -12,19 +12,27 @@ import HelperHeader from "@/components/HelperHeader";
 import CodeRenderer from "@/components/CodeRenderer";
 import Loader from "@/components/Loader";
 import { handleError } from "@/utils/handleError";
-import { setFullCode } from "@/redux/slices/compilerSlice";
+import { setFullCode, setIsOwner } from "@/redux/slices/compilerSlice";
 import { useLazyLoadCodeQuery } from "@/redux/slices/api";
+import { RootState } from "@/redux/slices/store";
 
 const Compiler = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const [trigger, { isLoading }] = useLazyLoadCodeQuery();
+  const fullCode = useSelector(
+    (state: RootState) => state.compilerSlice.fullCode
+  );
+
+  const [loadCodeQuery, { isLoading }] = useLazyLoadCodeQuery();
 
   const loadCode = async () => {
     try {
-      const response = await trigger({ id: id as string }).unwrap();
-      if (response.fullCode) dispatch(setFullCode(response.fullCode));
+      const response = await loadCodeQuery({ id: id as string }).unwrap();
+      if (response.fullCode) {
+        dispatch(setFullCode(response.fullCode));
+        dispatch(setIsOwner(response.isOwner));
+      }
     } catch (error) {
       handleError(error);
     }
@@ -57,7 +65,7 @@ const Compiler = () => {
         className="h-[calc(100dvh-60px)] min-w-[350px]"
         defaultSize={50}
       >
-        <CodeRenderer />
+        <CodeRenderer fullCode={fullCode} />
       </ResizablePanel>
     </ResizablePanelGroup>
   );

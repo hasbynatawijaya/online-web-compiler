@@ -5,6 +5,7 @@ import { IFullCode } from "@/types/compilerTypes";
 export interface ICompilerInitialState {
   fullCode: IFullCode;
   currentLanguage: keyof IFullCode;
+  isOwner: boolean;
 }
 
 const initialState: ICompilerInitialState = {
@@ -94,6 +95,7 @@ const initialState: ICompilerInitialState = {
     }`,
   },
   currentLanguage: "html",
+  isOwner: false,
 };
 
 const compilerSlice = createSlice({
@@ -113,12 +115,18 @@ const compilerSlice = createSlice({
       state,
       action: PayloadAction<ICompilerInitialState["fullCode"]>
     ) => {
-      console.log(action.payload);
       state.fullCode = action.payload;
+    },
+    setIsOwner: (state, action: PayloadAction<boolean>) => {
+      state.isOwner = action.payload;
     },
   },
 });
 
-export const { setCurrentLanguage, setFullCode, setFullCodeByLanguage } =
-  compilerSlice.actions;
+export const {
+  setCurrentLanguage,
+  setFullCode,
+  setFullCodeByLanguage,
+  setIsOwner,
+} = compilerSlice.actions;
 export default compilerSlice.reducer;
